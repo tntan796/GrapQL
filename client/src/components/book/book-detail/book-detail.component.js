@@ -3,10 +3,13 @@ import { Card } from 'primereact/card';
 import { useQuery } from '@apollo/client';
 import { getBook } from '../../../graphql-client/query';
 function BookDetailComponent(props) {
-    const {bookSelectedId} = props;
-    const {loading, error, data} = useQuery(getBook, {variables: {
-        id: bookSelectedId
-    }});
+    const { bookSelectedId } = props;
+    const { loading, error, data } = useQuery(getBook, {
+        variables: {
+            id: bookSelectedId
+        },
+        skip: bookSelectedId == null
+    });
 
     if (loading) {
         return <p>Loading book detail...</p>
@@ -16,26 +19,35 @@ function BookDetailComponent(props) {
         return <p>Loading book error...</p>
     }
 
-    console.log('getbook:', data);
+    const book = bookSelectedId != null ? data.book : null;
 
     return (
-        <Card>
-            <Card>
-                <h3>Ky nghe lay Tay</h3>
-                <p>Phong su</p>
-                <p>Vu Trong Phung</p>
-                <p>120</p>
-            </Card>
-            <br/>
-            <Card>
-                <h3>All books by this author</h3>
-                <ul>
-                    <ol>Ky nghe lay tay</ol>
-                    <ol>So do</ol>
-                </ul>
-            </Card>
-        </Card>
+        <React.Fragment>
+            {
+                book == null ? <Card>Please selected Book</Card> :
+                    <Card>
+                        <Card>
+                            <h3>{book.name}</h3>
+                            <p>{book.genre}</p>
+                            <p>{book.author.name}</p>
+                            <p>{book.author.age}</p>
+                        </Card>
+                        <br />
+                        <Card>
+                            <h3>All books by this author</h3>
+                            <ul>
+                            {
+                                book.author.books.map(b => (
+                                    <ol key={b.id}>{b.name}</ol>
+                                ))
+                            }
+                            </ul>
+                        </Card>
+                    </Card>
+
+            }
+        </React.Fragment>
     )
 }
 
-export default  BookDetailComponent
+export default BookDetailComponent

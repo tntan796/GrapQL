@@ -10,7 +10,7 @@ const getBooks = gql`
   }`;
 
   const getBook = gql`
-  query GetBook ($id: ID!) {
+  query GetBook ($id: ID) {
     book(id: $id) {
       id
       name
